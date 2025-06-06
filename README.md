@@ -58,6 +58,7 @@ After building the project, you can deploy the contents of the `dist` directory 
 
 ### Desktop:
 **-Move Up: Arrow Up**
+
 **-Move Down: Arrow Down**
 
 ### Mobile:
