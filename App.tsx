@@ -82,8 +82,8 @@ function App() {
     up: false,
     down: false,
     w: false,
-    p: false,
-    shift: false
+    j: false,
+    k: false
   });
   
   // Initialize audio elements
@@ -164,12 +164,13 @@ function App() {
         setKeys(prev => ({ ...prev, down: true }));
       } else if (e.key.toLowerCase() === 'w') {
         setKeys(prev => ({ ...prev, w: true }));
+      } else if (e.key.toLowerCase() === 'j') {
+        setKeys(prev => ({ ...prev, j: true }));
+      } else if (e.key.toLowerCase() === 'k') {
+        setKeys(prev => ({ ...prev, k: true }));
       } else if (e.key.toLowerCase() === 'p') {
-        setKeys(prev => ({ ...prev, p: true }));
-        // Toggle pause
+        // Toggle pause (keeping pause functionality with P key)
         setPaused(prev => !prev);
-      } else if (e.key === 'Shift') {
-        setKeys(prev => ({ ...prev, shift: true }));
       }
     };
     
@@ -180,10 +181,10 @@ function App() {
         setKeys(prev => ({ ...prev, down: false }));
       } else if (e.key.toLowerCase() === 'w') {
         setKeys(prev => ({ ...prev, w: false }));
-      } else if (e.key.toLowerCase() === 'p') {
-        setKeys(prev => ({ ...prev, p: false }));
-      } else if (e.key === 'Shift') {
-        setKeys(prev => ({ ...prev, shift: false }));
+      } else if (e.key.toLowerCase() === 'j') {
+        setKeys(prev => ({ ...prev, j: false }));
+      } else if (e.key.toLowerCase() === 'k') {
+        setKeys(prev => ({ ...prev, k: false }));
       }
     };
     
@@ -196,38 +197,7 @@ function App() {
     };
   }, []);
   
-  // Touch controls for mobile
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    
-    const handleTouchMove = (e: TouchEvent) => {
-      e.preventDefault();
-      if (gameMode === GAME_MODES.PLAYER_VS_AI) {
-        const touch = e.touches[0];
-        const rect = canvas.getBoundingClientRect();
-        const relativeY = touch.clientY - rect.top;
-        
-        // Update paddle position based on touch
-        setLeftPaddle(prev => ({
-          ...prev,
-          y: Math.max(0, Math.min(GAME_HEIGHT - PADDLE_HEIGHT, relativeY - PADDLE_HEIGHT / 2))
-        }));
-      }
-    };
-    
-    const handleTouchStart = (e: TouchEvent) => {
-      e.preventDefault();
-    };
-    
-    canvas.addEventListener('touchmove', handleTouchMove);
-    canvas.addEventListener('touchstart', handleTouchStart);
-    
-    return () => {
-      canvas.removeEventListener('touchmove', handleTouchMove);
-      canvas.removeEventListener('touchstart', handleTouchStart);
-    };
-  }, [gameMode]);
+  // Desktop-only controls - mobile support removed
   
   // Game loop
   useEffect(() => {
@@ -246,17 +216,19 @@ function App() {
       
       // Update paddle positions based on keyboard input
       if (gameMode === GAME_MODES.PLAYER_VS_AI) {
-        const speed = keys.shift ? 10 : 5; // Turbo speed when shift is pressed
+        const speed = 5; // Fixed speed (turbo removed)
         
         // Player 1 controls (left paddle)
-        if (keys.w) {
+        // K key or Up arrow for up
+        if (keys.k || keys.up) {
           setLeftPaddle(prev => ({
             ...prev,
             y: Math.max(0, prev.y - speed)
           }));
         }
         
-        if (keys.down) {
+        // W or J key or Down arrow for down
+        if (keys.w || keys.j || keys.down) {
           setLeftPaddle(prev => ({
             ...prev,
             y: Math.min(GAME_HEIGHT - PADDLE_HEIGHT, prev.y + speed)
@@ -485,19 +457,21 @@ function App() {
       };
     });
   };
-  
-  // Draw game objects
-  const drawGame = () => {
+    // Draw game objects
+    const drawGame = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     
     const context = canvas.getContext('2d');
     if (!context) return;
     
-    // Clear canvas
-    context.fillStyle = 'black';
-    context.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
-    
+    // Clear canvas with black or white (for blinking effect)
+    if (blinking) {
+      context.fillStyle = 'white';
+    } else {
+      context.fillStyle = 'black';
+    }
+    context.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);    
     // Draw center line
     context.strokeStyle = 'white';
     context.setLineDash([10, 15]);
@@ -510,7 +484,12 @@ function App() {
     // Draw paddles
     context.fillStyle = 'white';
     context.fillRect(leftPaddle.x, leftPaddle.y, leftPaddle.width, leftPaddle.height);
+    
+    // Draw right paddle (AI) with robot emoji
     context.fillRect(rightPaddle.x, rightPaddle.y, rightPaddle.width, rightPaddle.height);
+    // Add robot emoji to right paddle
+    context.font = '20px Arial';
+    context.fillText('🤖', rightPaddle.x - 5, rightPaddle.y + PADDLE_HEIGHT / 2 + 5);
     
     // Draw ball
     if (ballType === BALL_TYPES.WHITE) {
@@ -534,5 +513,241 @@ function App() {
       context.fillStyle = 'rgba(0, 0, 0, 0.5)';
       context.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
       context.fillStyle = 'white';
-      context.
-(Content truncated due to size limit. Use line ranges to read in chunks)
+      context.font = '40px Arial';
+      context.textAlign = 'center';
+      context.fillText('PAUSED', GAME_WIDTH / 2, GAME_HEIGHT / 2);
+      context.font = '20px Arial';
+      context.fillText('Press P to resume', GAME_WIDTH / 2, GAME_HEIGHT / 2 + 40);
+    }
+    
+    // Draw game over screen
+    if (gameOver) {
+      context.fillStyle = 'rgba(0, 0, 0, 0.7)';
+      context.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+      context.fillStyle = 'white';
+      context.font = '40px Arial';
+      context.textAlign = 'center';
+      context.fillText('GAME OVER', GAME_WIDTH / 2, GAME_HEIGHT / 2 - 40);
+      context.fillText(`${winner} WINS!`, GAME_WIDTH / 2, GAME_HEIGHT / 2 + 20);
+      context.font = '20px Arial';
+      context.fillText('Click to play again', GAME_WIDTH / 2, GAME_HEIGHT / 2 + 80);
+    }
+  };
+  
+  // Blink screen state
+  const [blinking, setBlinking] = useState(false);
+  const [blinkCount, setBlinkCount] = useState(0);
+  
+  // Check for win condition
+  const checkWinCondition = () => {
+    if (leftPaddle.score >= WINNING_SCORE) {
+      // Start blinking effect before game over
+      if (!blinking && blinkCount === 0) {
+        setBlinking(true);
+        setBlinkCount(1);
+        setTimeout(() => {
+          setBlinking(false);
+          setTimeout(() => {
+            setBlinking(true);
+            setBlinkCount(2);
+            setTimeout(() => {
+              setBlinking(false);
+              setTimeout(() => {
+                setBlinking(true);
+                setBlinkCount(3);
+                setTimeout(() => {
+                  setBlinking(false);
+                  setGameOver(true);
+                  setWinner('LEFT PLAYER');
+                  setGameStarted(false);
+                  setBlinkCount(0);
+                }, 200);
+              }, 200);
+            }, 200);
+          }, 200);
+        }, 200);
+      }
+    } else if (rightPaddle.score >= WINNING_SCORE) {
+      // Start blinking effect before game over
+      if (!blinking && blinkCount === 0) {
+        setBlinking(true);
+        setBlinkCount(1);
+        setTimeout(() => {
+          setBlinking(false);
+          setTimeout(() => {
+            setBlinking(true);
+            setBlinkCount(2);
+            setTimeout(() => {
+              setBlinking(false);
+              setTimeout(() => {
+                setBlinking(true);
+                setBlinkCount(3);
+                setTimeout(() => {
+                  setBlinking(false);
+                  setGameOver(true);
+                  setWinner('RIGHT PLAYER');
+                  setGameStarted(false);
+                  setBlinkCount(0);
+                }, 200);
+              }, 200);
+            }, 200);
+          }, 200);
+        }, 200);
+      }
+    }
+  };
+  
+  // Start game
+  const startGame = () => {
+    // Reset game state
+    setBall({
+      x: GAME_WIDTH / 2,
+      y: GAME_HEIGHT / 2,
+      dx: 5 * (Math.random() > 0.5 ? 1 : -1),
+      dy: (Math.random() * 6) - 3,
+      size: BALL_SIZE
+    });
+    
+    setLeftPaddle({
+      x: 0,
+      y: GAME_HEIGHT / 2 - PADDLE_HEIGHT / 2,
+      width: PADDLE_WIDTH,
+      height: PADDLE_HEIGHT,
+      dy: 0,
+      score: 0
+    });
+    
+    setRightPaddle({
+      x: GAME_WIDTH - PADDLE_WIDTH,
+      y: GAME_HEIGHT / 2 - PADDLE_HEIGHT / 2,
+      width: PADDLE_WIDTH,
+      height: PADDLE_HEIGHT,
+      dy: 0,
+      score: 0
+    });
+    
+    setGameStarted(true);
+    setPaused(false);
+    setGameOver(false);
+    setWinner(null);
+  };
+  
+  // Handle canvas click (for restarting game)
+  const handleCanvasClick = () => {
+    if (gameOver) {
+      startGame();
+    }
+  };
+  
+  // Handle game mode change
+  const handleGameModeChange = (mode: string) => {
+    setGameMode(mode);
+    // Reset game when changing mode
+    if (gameStarted) {
+      startGame();
+    }
+  };
+  
+  // Handle difficulty change
+  const handleDifficultyChange = (level: string) => {
+    setDifficulty(level);
+  };
+  
+  // Handle ball type change
+  const handleBallTypeChange = (type: string) => {
+    setBallType(type);
+  };
+  
+  // Handle sound toggle
+  const handleSoundToggle = () => {
+    setSoundEnabled(prev => !prev);
+  };
+  
+  // Render game
+  return (
+    <div className="pong-game">
+      <h1>PONG</h1>
+      
+      {/* Game settings */}
+      <div className="game-settings">
+        <div className="setting">
+          <label>Game Mode:</label>
+          <select 
+            value={gameMode} 
+            onChange={(e) => handleGameModeChange(e.target.value)}
+            disabled={gameStarted && !gameOver}
+          >
+            <option value={GAME_MODES.PLAYER_VS_AI}>Player vs AI</option>
+            <option value={GAME_MODES.AI_VS_AI}>AI vs AI</option>
+          </select>
+        </div>
+        
+        <div className="setting">
+          <label>Difficulty:</label>
+          <select 
+            value={difficulty} 
+            onChange={(e) => handleDifficultyChange(e.target.value)}
+          >
+            <option value={DIFFICULTY_LEVELS.EASY}>Easy</option>
+            <option value={DIFFICULTY_LEVELS.MEDIUM}>Medium</option>
+            <option value={DIFFICULTY_LEVELS.HARD}>Hard</option>
+          </select>
+        </div>
+        
+        <div className="setting">
+          <label>Ball Type:</label>
+          <select 
+            value={ballType} 
+            onChange={(e) => handleBallTypeChange(e.target.value)}
+          >
+            <option value={BALL_TYPES.WHITE}>White Ball</option>
+            <option value={BALL_TYPES.CLOUD}>Cloud (⛈️)</option>
+            <option value={BALL_TYPES.CAT}>Cat (😼)</option>
+          </select>
+        </div>
+        
+        <div className="setting">
+          <label>Sound:</label>
+          <button onClick={handleSoundToggle}>
+            {soundEnabled ? 'On' : 'Off'}
+          </button>
+        </div>
+      </div>
+      
+      {/* Game canvas */}
+      <canvas
+        ref={canvasRef}
+        width={GAME_WIDTH}
+        height={GAME_HEIGHT}
+        onClick={handleCanvasClick}
+        className="game-canvas"
+      />
+      
+      {/* Game controls */}
+      {!gameStarted && !gameOver && (
+        <div className="game-start">
+          <button onClick={startGame}>Start Game</button>
+        </div>
+      )}
+      
+      {/* Game instructions */}
+      <div className="game-instructions">
+        <h2>Controls:</h2>
+        <p>Move Up: Arrow Up / K</p>
+        <p>Move Down: Arrow Down / W / J</p>
+        <p>Pause/Resume: P</p>
+      </div>
+    </div>
+  );
+}
+
+// Add window type declaration
+declare global {
+  interface Window {
+    createPaddleHitSound: (pitch?: number) => void;
+    createWallHitSound: () => void;
+    createScoreSound: () => void;
+  }
+}
+
+export default App;
