@@ -733,9 +733,8 @@ function App() {
       {/* Game instructions */}
       <div className="game-instructions">
         <h2>Controls:</h2>
-        <p>Move Up: Arrow Up / K</p>
-        <p>Move Down: Arrow Down / W / J</p>
-        <p>Pause/Resume: P</p>
+        <p>Move Up: Arrow Up</p>
+        <p>Move Down: Arrow Down</p>
       </div>
     </div>
   );
