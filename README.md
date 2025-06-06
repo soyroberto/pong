@@ -61,6 +61,9 @@ After building the project, you can deploy the contents of the `dist` directory 
 
 **-Move Down: Arrow Down**
 
+## How does it look like
+![Play Pong](pongimg.png)
+
 ## License
 
 This project is available for personal and educational use. 
