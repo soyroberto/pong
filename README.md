@@ -61,9 +61,6 @@ After building the project, you can deploy the contents of the `dist` directory 
 
 **-Move Down: Arrow Down**
 
-### Mobile:
-- Touch and drag the paddle to move it
-
 ## License
 
-This project is available for personal and educational use.
+This project is available for personal and educational use. 
