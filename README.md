@@ -57,10 +57,8 @@ After building the project, you can deploy the contents of the `dist` directory 
 ## Game Controls
 
 ### Desktop:
-- Move Up: Arrow Up / W
-- Move Down: Arrow Down / P
-- Turbo Speed: Hold Shift
-- Pause/Resume: P
+*** - Move Up: Arrow Up
+*** - Move Down: Arrow Down
 
 ### Mobile:
 - Touch and drag the paddle to move it
