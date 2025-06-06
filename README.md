@@ -57,8 +57,8 @@ After building the project, you can deploy the contents of the `dist` directory 
 ## Game Controls
 
 ### Desktop:
-**-Move Up: Arrow Up
-**-Move Down: Arrow Down
+**-Move Up: Arrow Up**
+**-Move Down: Arrow Down**
 
 ### Mobile:
 - Touch and drag the paddle to move it
