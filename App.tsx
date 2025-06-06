@@ -735,6 +735,7 @@ function App() {
         <h2>Controls:</h2>
         <p>Move Up: Arrow Up</p>
         <p>Move Down: Arrow Down</p>
+         <p>Hecho por Roberto + Manus </p>
       </div>
     </div>
   );
