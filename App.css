@@ -1,0 +1,188 @@
+/* Pong Game Styles */
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Press Start 2P', monospace, Arial, sans-serif;
+  background-color: #000;
+  color: #fff;
+  overflow: hidden;
+}
+
+.pong-game {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+h1 {
+  font-size: 3rem;
+  margin-bottom: 20px;
+  text-align: center;
+  letter-spacing: 4px;
+}
+
+.game-canvas {
+  border: 2px solid #fff;
+  background-color: #000;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+  display: block;
+  touch-action: none; /* Prevents default touch actions for better mobile control */
+}
+
+.game-settings {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 20px;
+  width: 100%;
+  max-width: 800px;
+}
+
+.setting {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 10px;
+}
+
+.setting label {
+  margin-bottom: 5px;
+  font-size: 0.9rem;
+}
+
+.setting select, .setting button {
+  background-color: #000;
+  color: #fff;
+  border: 2px solid #fff;
+  padding: 8px 12px;
+  font-family: inherit;
+  cursor: pointer;
+  min-width: 120px;
+  text-align: center;
+}
+
+.setting select:hover, .setting button:hover {
+  background-color: #333;
+}
+
+.setting select:focus, .setting button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
+}
+
+.game-start {
+  margin: 20px 0;
+}
+
+.game-start button {
+  background-color: #000;
+  color: #fff;
+  border: 2px solid #fff;
+  padding: 12px 24px;
+  font-size: 1.2rem;
+  font-family: inherit;
+  cursor: pointer;
+  letter-spacing: 2px;
+  transition: all 0.2s;
+}
+
+.game-start button:hover {
+  background-color: #fff;
+  color: #000;
+}
+
+.game-instructions {
+  margin-top: 20px;
+  text-align: center;
+  max-width: 800px;
+}
+
+.game-instructions h2 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+.game-instructions p {
+  margin: 5px 0;
+  font-size: 0.9rem;
+}
+
+/* Media Queries for Responsive Design */
+@media (max-width: 850px) {
+  .game-canvas {
+    width: 100%;
+    height: auto;
+  }
+  
+  h1 {
+    font-size: 2rem;
+  }
+  
+  .game-settings {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .setting {
+    margin: 5px 0;
+  }
+}
+
+/* Landscape orientation for mobile */
+@media (max-width: 850px) and (orientation: landscape) {
+  .pong-game {
+    padding: 10px;
+  }
+  
+  h1 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+  }
+  
+  .game-settings {
+    flex-direction: row;
+    margin-bottom: 10px;
+  }
+  
+  .setting {
+    margin: 0 5px;
+  }
+  
+  .setting label {
+    font-size: 0.7rem;
+  }
+  
+  .setting select, .setting button {
+    padding: 5px 8px;
+    min-width: 100px;
+    font-size: 0.8rem;
+  }
+  
+  .game-instructions {
+    display: none; /* Hide instructions in landscape mode to save space */
+  }
+  
+  .game-start button {
+    padding: 8px 16px;
+    font-size: 1rem;
+  }
+}
+
+/* Animation for the game title */
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+h1 {
+  animation: pulse 2s infinite;
+}
